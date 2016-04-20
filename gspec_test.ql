@@ -1,18 +1,17 @@
-import "expectations" as be
-
 import "gspec"
+import "expectations" as be
 
 spec = new gspec.GSpec(nil)
 
 spec.describe("Corp", fn(self) {
 	self.context("when passing no name", fn(self) {
-		self.it("returns 400", fn(self) {
+		self.it("returns 200", fn(self) {
 			self.expect(true).to(be.trusty)
 		})
 	})
 
 	self.context("when passing name", fn(self) {
-		self.it("returns 200", fn(self) {
+		self.it("returns 400", fn(self) {
 			self.expect(true).notTo(be.trusty)
 		})
 	})
@@ -20,13 +19,13 @@ spec.describe("Corp", fn(self) {
 
 spec.describe("Dish", fn(self) {
 	self.context("when passing no name", fn(self) {
-		self.it("returns 400", fn(self) {
+		self.it("returns 200", fn(self) {
 			self.expect(true).to(be.trusty)
 		})
 	})
 
 	self.context("when passing name", fn(self) {
-		self.it("returns 200", fn(self) {
+		self.it("returns 400", fn(self) {
 			self.expect(true).to(be.falsity)
 		})
 	})
