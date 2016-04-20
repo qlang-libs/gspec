@@ -39,7 +39,7 @@ GSpec = class {
 		name = fmt.sprintf("Test [%s]:", name)
 		desc = this.describes[name]
 		if desc == undefined {
-			specObj = new Describe(this, name, test)
+			specObj = new Describe(this, name)
 			this.describes[name] = specObj
 			println(name)
 			test(specObj)
@@ -73,10 +73,9 @@ GSpec = class {
 
 // Describe acts as an top wrapper for BDD.
 Describe = class {
-	fn _init(gspec, name, test) {
+	fn _init(gspec, name) {
 		this.gspec = gspec
 		this.name = name
-		this.test = test
 	}
 
 	// context creates a new Context with the given name and GSpec itself, 
@@ -88,16 +87,15 @@ Describe = class {
 		}
 		printf(fmt.sprintf("	%s, ", condition))
 		condition = fmt.sprintf("%s %s,", this.name, condition)
-		ctx = new Context(this.gspec, condition, test)
+		ctx = new Context(this.gspec, condition)
 		test(ctx)
 	}
 }
 
 Context = class {
-	fn _init(gspec, condition, test) {
+	fn _init(gspec, condition) {
 		this.gspec = gspec
 		this.condition = condition
-		this.test = test
 	}
 
 	// it creates a new It with the given name and GSpec itself, 
@@ -111,15 +109,14 @@ Context = class {
 		assertStr = fmt.sprintf("it %s. ", assertion)
 		printf(assertStr)
 		assertion = fmt.sprintf("%s %s", this.condition, assertStr)
-		test(new It(this.gspec, assertion, test))
+		test(new It(this.gspec, assertion))
 	}
 }
 
 It = class {
-	fn _init(gspec, assertion, test) {
+	fn _init(gspec, assertion) {
 		this.gspec = gspec
 		this.assertion = assertion
-		this.test = test
 	}
 
 	// expect creates and returns a new Expect with the given testObj. 
