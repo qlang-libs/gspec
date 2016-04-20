@@ -1,4 +1,4 @@
-import "expectations" as expect
+import "expectations" as be 
 import "types"
 
 // GSpec acts as a director for testing contorlling
@@ -22,7 +22,8 @@ import "types"
 //
 // 	 spec.result()
 GSpec = class {
-	fn _init() {
+	fn _init(testingT) {
+		this.testingT = testingT 
 		this.describes = mkmap("string:var")
 		this.failures = new types.Slice("string")
 	}
@@ -31,7 +32,7 @@ GSpec = class {
 	// if the the given test is not a fn, it will panic.
 	// It will run test by passing the new Describe.
 	fn describe(name, test) {
-		if !expect.isFn(test)	{
+		if !be.function(test)	{
 			panic("GSpec#describe: the second param must be a fn")
 		}
 
@@ -82,10 +83,10 @@ Describe = class {
 	// if the the given test is not a fn, it will panic.
 	// It will run test by passing the new Context.
 	fn context(condition, test) {
-		if !expect.isFn(test)	{
+		if !be.function(test)	{
 			panic("Describe#context: the second param must be a fn")
 		}
-		printf(fmt.sprintf("		%s, ", condition))
+		printf(fmt.sprintf("	%s, ", condition))
 		condition = fmt.sprintf("%s %s,", this.name, condition)
 		ctx = new Context(this.gspec, condition, test)
 		test(ctx)
@@ -103,7 +104,7 @@ Context = class {
 	// if the the given test is not a fn, it will panic.
 	// It will run test by passing the new It.
 	fn it(assertion, test) {
-		if !expect.isFn(test)	{
+		if !be.function(test)	{
 			panic("Describe#context: the second param must be a fn")
 		}
 
@@ -134,30 +135,16 @@ Expect = class {
 		this.testObj = testObj
 	}
 
-	fn toBe(expectation) {
-		result = false
-		if expect.isFn(expectation)	{
-			this.assertion = fmt.sprintf("%sExpect %s, but it didn't.", this.assertion, expectation.string(this.testObj))
-			result = expectation(this.testObj)
-		} else {
-			this.assertion = fmt.sprintf("%sExpect %v, but got %v.", this.assertion, expectation, this.testObj)
-			result = expectation == this.testObj
-		}
-
+	fn to(expectation) {
+		this.assertion = fmt.sprintf("%sExpect %v %s, but it didn't.", this.assertion, this.testObj, expectation.description)
+		result = expectation.assert(this.testObj)
 		this.outputs(result)
 		return result
 	}
 
-	fn notToBe(expectation) {
-		result = false
-		if expect.isFn(expectation)	{
-				this.assertion = fmt.sprintf("%sExpect not to be %s, but it did.", this.assertion, expectation.string(this.testObj))
-			result = !expectation(this.testObj)
-		} else {
-			this.assertion = fmt.sprintf("%sExpect not to be %v, but it was.", this.assertion, expectation)
-			result = expectation != this.testObj
-		}
-
+	fn notTo(expectation) {
+		this.assertion = fmt.sprintf("%sExpect %v not %s, but it did.", this.assertion, this.testObj, expectation.description)
+		result = !expectation.assert(this.testObj)
 		this.outputs(result)
 		return result
 	}
@@ -167,6 +154,9 @@ Expect = class {
 			println("√")
 		} else {
 			this.gspec.failures.push(this.assertion)
+			if this.gspec.testingT != nil {
+				this.gspec.testingT.Error(this.assertion)
+			}
 			println("×")
 		}
 	}
