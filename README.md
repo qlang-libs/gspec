@@ -77,7 +77,7 @@ qlang testing file
 import "gspec"
 import "expectations" as be
 
-spec = new gspec.GSpec(nil)
+spec = new gspec.GSpec(testingT.t)
 
 spec.describe("Corp", fn(self) {
 	self.context("when passing no name", fn(self) {
